@@ -18,6 +18,7 @@ from lmfdb.utils import (
     display_float, display_complex, round_CBF_to_half_int, polyquo_knowl,
     display_knowl, factor_base_factorization_latex,
     integer_options, names_and_urls, web_latex_factored_integer)
+from lmfdb.utils.tables import th_wrap, td_wrapl, td_wrapc, td_wrapr
 from lmfdb.number_fields.web_number_field import nf_display_knowl
 from lmfdb.number_fields.number_field import field_pretty
 from lmfdb.galois_groups.transitive_group import small_group_label_display_knowl
@@ -106,15 +107,6 @@ def field_display_gen(label, poly, disc=None, self_dual=None, truncate=0):
             parts[2] = r'\(\cdots\)'
             name = '.'.join(parts)
         return nf_display_knowl(label, name)
-
-def th_wrap(kwl, title):
-    return '    <th>%s</th>' % display_knowl(kwl, title=title)
-def td_wrapl(val):
-    return '    <td align="left">%s</td>' % val
-def td_wrapc(val):
-    return '    <td align="center">%s</td>' % val
-def td_wrapr(val):
-    return '    <td align="right">%s</td>' % val
 
 def parity_text(val):
     return 'odd' if val == -1 else 'even'

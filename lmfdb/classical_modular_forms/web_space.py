@@ -6,6 +6,7 @@ from lmfdb import db
 from sage.databases.cremona import cremona_letter_code
 from lmfdb.number_fields.web_number_field import nf_display_knowl, cyclolookup, rcyclolookup
 from lmfdb.utils import display_knowl, web_latex, coeff_to_power_series, list_factored_to_factored_poly_otherorder, make_bigint, web_latex_factored_integer
+from lmfdb.utils.tables import th_wrap, td_wrapl
 from flask import url_for
 import re
 NEWLABEL_RE = re.compile(r"^([0-9]+)\.([0-9]+)\.([a-z]+)$")
@@ -173,11 +174,6 @@ def display_hecke_polys(form_labels, num_disp = 5):
     - ``form_labels`` - a list of strings, the labels of the newforms in the space
     - ``num_disp`` - an integer, the number of characteristic polynomials to display by default.
     """
-    #from time import clock
-    def th_wrap(kwl, title):
-        return '    <th>%s</th>' % display_knowl(kwl, title=title)
-    def td_wrap(val):
-        return '    <td>$%s$</th>' % val
     num_forms = len(form_labels)
     orbit_codes = []
     for label in form_labels:
@@ -215,7 +211,7 @@ def display_hecke_polys(form_labels, num_disp = 5):
             polys.append('  <tr>')
         else:
             polys.append('  <tr class="more nodisplay">')
-        polys.extend([td_wrap(p), '<td>' + lpoly + '</th>'])
+        polys.extend([td_wrapl(p), td_wrapl(lpoly)])
         polys.append('  </tr>')
         loop_count += 1
     if loop_count > num_disp:
