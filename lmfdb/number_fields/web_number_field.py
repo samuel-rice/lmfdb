@@ -215,9 +215,7 @@ def field_pretty(label):
         if r == '0':
             D = -D
         # Don't prettify invalid quadratic field labels
-        if not is_fundamental_discriminant(D):
-            return label
-        return r'\(\Q(\sqrt{' + str(D if D%4 else D/4) + r'}) \)'
+        return label
     if label in cycloinfo:
         return r'\(\Q(\zeta_{%d})\)' % cycloinfo[label]
     if d == '4':
