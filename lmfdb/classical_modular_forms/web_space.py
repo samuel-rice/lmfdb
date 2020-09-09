@@ -6,7 +6,7 @@ from lmfdb import db
 from sage.databases.cremona import cremona_letter_code
 from lmfdb.number_fields.web_number_field import nf_display_knowl, cyclolookup, rcyclolookup
 from lmfdb.utils import display_knowl, web_latex, coeff_to_power_series, list_factored_to_factored_poly_otherorder, make_bigint, web_latex_factored_integer
-from lmfdb.utils.tables import th_wrap, td_wrapl
+from lmfdb.utils.tables import NumberTheoryDataTable
 from flask import url_for
 import re
 NEWLABEL_RE = re.compile(r"^([0-9]+)\.([0-9]+)\.([a-z]+)$")
@@ -198,37 +198,17 @@ def display_hecke_polys(form_labels, num_disp = 5):
     #print "factoring took " + str(factor_time)
     if not hecke_polys_orbits:
         return "There are no characteristic polynomials of Hecke operators in the database"
-    polys = ['<div style="max-width: 100%; overflow-x: auto;">',
-             '<table class="ntdata">', '<thead>', '  <tr>',
-             th_wrap('p', '$p$'),
-             th_wrap('lpoly', '$F_p(T)$'),
-             '  </tr>', '</thead>', '<tbody>']
-    loop_count = 0
+
+    hecke_polys_table = NumberTheoryDataTable(pinned_rows=5)
+    hecke_polys_table.add_column('p', '$p$')
+    hecke_polys_table.add_column('lpoly', '$F_p(T)$')
+
     for p, lpoly in hecke_polys_orbits.items():
-        if lpoly.strip() == "":
-            lpoly = "1";
-        if loop_count < num_disp:
-            polys.append('  <tr>')
-        else:
-            polys.append('  <tr class="more nodisplay">')
-        polys.extend([td_wrapl(p), td_wrapl(lpoly)])
-        polys.append('  </tr>')
-        loop_count += 1
-    if loop_count > num_disp:
-        polys.append('''
-            <tr class="less toggle">
-                <td colspan="{{colspan}}">
-                  <a onclick="show_moreless(&quot;more&quot;); return true" href="#moreep">show more</a>
-                </td>
-            </tr>
-            <tr class="more toggle nodisplay">
-                <td colspan="{{colspan}}">
-                  <a onclick="show_moreless(&quot;less&quot;); return true" href="#eptable">show less</a>
-                </td>
-            </tr>
-            ''')
-        polys.extend(['</tbody>', '</table>', '</div>'])
-    return '\n'.join(polys)
+        hecke_polys_table.add_row([p, lpoly if lpoly.strip() != "" else "1"])
+
+    return '\n'.join(['<div style="max-width: 100%; overflow-x: auto;">',
+                      hecke_polys_table.to_html(),
+                      '</div>'])
 
 class DimGrid(object):
     def __init__(self, grid=None):
