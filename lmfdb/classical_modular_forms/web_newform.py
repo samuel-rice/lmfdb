@@ -18,7 +18,7 @@ from lmfdb.utils import (
     display_float, display_complex, round_CBF_to_half_int, polyquo_knowl,
     display_knowl, factor_base_factorization_latex,
     integer_options, names_and_urls, web_latex_factored_integer)
-from lmfdb.utils.tables import th_wrap, td_wrapl, td_wrapc, td_wrapr
+from lmfdb.utils.tables import th_wrap, td_wrapl, td_wrapc, td_wrapr, NumberTheoryDataTable
 from lmfdb.number_fields.web_number_field import nf_display_knowl
 from lmfdb.number_fields.number_field import field_pretty
 from lmfdb.galois_groups.transitive_group import small_group_label_display_knowl
@@ -980,50 +980,39 @@ function switch_basis(btype) {
             d = r['self_twist_disc']
             return '' if r['target_label'] != self.label else ('inner' if not d else ('trivial' if d == 1 else ('CM' if d < 0 else 'RM')))
 
-        twists1 = ['<table class="ntdata" style="float: left">', '<thead>',
-                   '<tr><th colspan=8>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;By %s</th></tr>'% display_knowl('cmf.twist','twisting character orbit'), '<tr>',
-                  th_wrap('character.dirichlet.galois_orbit_label', 'Char'),
-                  th_wrap('character.dirichlet.parity', 'Parity'),
-                  th_wrap('character.dirichlet.order', 'Ord'),
-                  th_wrap('cmf.twist_multiplicity', 'Mult'),
-                  th_wrap('cmf.self_twist_field', 'Type'),
-                  th_wrap('cmf.twist', 'Twist'),
-                  th_wrap('cmf.twist_minimal', 'Min'),
-                  th_wrap('cmf.dimension', 'Dim'),
-                  '</tr>', '</thead>', '<tbody>']
+        twists1 = NumberTheoryDataTable(pinned_rows=10, style='float: left', title=f"By {display_knowl('cmf.twist','twisting character orbit')}")
+        twists1.add_column('character.dirichlet.galois_orbit_label', 'Char')
+        twists1.add_column('character.dirichlet.parity', 'Parity')
+        twists1.add_column('character.dirichlet.order', 'Ord', alignment='right')
+        twists1.add_column('cmf.twist_multiplicity', 'Mult', alignment='right')
+        twists1.add_column('cmf.self_twist_field', 'Type')
+        twists1.add_column('cmf.twist', 'Twist')
+        twists1.add_column('cmf.twist_minimal', 'Min', alignment='center')
+        twists1.add_column('cmf.dimension', 'Dim', alignment='right')
 
         for r in  sorted(self.twists, key = lambda x : [x['conductor'],x['twisting_char_orbit'],x['target_level'],x['target_char_orbit'],x['target_hecke_orbit']]):
             minimality = '&check;' if r['target_label'] == self.minimal_twist else 'yes' if r['target_is_minimal'] else ''
             char_link = display_knowl('character.dirichlet.orbit_data', title=r['twisting_char_label'], kwargs={'label':r['twisting_char_label']})
             target_link = '<a href="%s">%s</a>'%('/ModularForm/GL2/Q/holomorphic/' + r['target_label'].replace('.','/'),r['target_label'])
-            twists1.append('<tr>')
-            twists1.extend([td_wrapl(char_link), td_wrapl(parity_text(r['parity'])), td_wrapr(r['order']), td_wrapr(r['multiplicity']), td_wrapl(twist_type(r)),
-                            td_wrapl(target_link), td_wrapc(minimality), td_wrapr(r['target_dim'])])
-            twists1.append('</tr>')
-        twists1.extend(['</tbody>', '</table>'])
+            twists1.add_row([char_link, parity_text(r['parity']), r['order'], r['multiplicity'], twist_type(r),
+                            target_link, minimality, r['target_dim']])
 
-        twists2 = ['<table class="ntdata" style="float: left">', '<thead>',
-                   '<tr><th colspan=8>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;By %s</th></tr>'% display_knowl('cmf.twist','twisted newform orbit'), '<tr>',
-                  th_wrap('cmf.twist', 'Twist'),
-                  th_wrap('cmf.twist_minimal', 'Min'),
-                  th_wrap('cmf.dimension', 'Dim'),
-                  th_wrap('character.dirichlet.galois_orbit_label', 'Char'),
-                  th_wrap('character.dirichlet.parity', 'Parity'),
-                  th_wrap('character.dirichlet.order', 'Ord'),
-                  th_wrap('cmf.twist_multiplicity', 'Mult'),
-                  th_wrap('cmf.self_twist_field', 'Type'),
-                  '</tr>', '</thead>', '<tbody>']
+        twists2 = NumberTheoryDataTable(pinned_rows=10, style='float: left', title=f"By {display_knowl('cmf.twist','twisted newform orbit')}")
+        twists2.add_column('cmf.twist', 'Twist')
+        twists2.add_column('cmf.twist_minimal', 'Min', alignment='center')
+        twists2.add_column('cmf.dimension', 'Dim', alignment='right')
+        twists2.add_column('character.dirichlet.galois_orbit_label', 'Char')
+        twists2.add_column('character.dirichlet.parity', 'Parity')
+        twists2.add_column('character.dirichlet.order', 'Ord', alignment='right')
+        twists2.add_column('cmf.twist_multiplicity', 'Mult', alignment='right')
+        twists2.add_column('cmf.self_twist_field', 'Type')
         for r in sorted(self.twists, key = lambda x : [x['target_level'],x['target_char_orbit'],x['target_hecke_orbit'],x['conductor'],x['twisting_char_orbit']]):
             minimality = '&check;' if r['target_label'] == self.minimal_twist else 'yes' if r['target_is_minimal'] else ''
             char_link = display_knowl('character.dirichlet.orbit_data', title=r['twisting_char_label'], kwargs={'label':r['twisting_char_label']})
             target_link = '<a href="%s">%s</a>'%('/ModularForm/GL2/Q/holomorphic/' + r['target_label'].replace('.','/'),r['target_label'])
-            twists2.append('<tr>')
-            twists2.extend([td_wrapl(target_link), td_wrapc(minimality), td_wrapr(r['target_dim']),
-                            td_wrapl(char_link), td_wrapl(parity_text(r['parity'])), td_wrapr(r['order']), td_wrapr(r['multiplicity']), td_wrapl(twist_type(r))])
-            twists2.append('</tr>')
-        twists2.extend(['</tbody>', '</table>'])
+            twists2.add_row([target_link, minimality, r['target_dim'], char_link, parity_text(r['parity']), r['order'], r['multiplicity'], twist_type(r)])
 
-        return '\n'.join(twists1) + '\n<div style="float: left">&emsp;&emsp;&emsp;&emsp;</div>\n' + '\n'.join(twists2) + '\n<br clear="all" />\n'
+        return twists1.to_html() + '\n<div style="float: left">&emsp;&emsp;&emsp;&emsp;</div>\n' + twists2.to_html() + '\n<br clear="all" />\n'
 
     def display_embedded_twists(self):
         if not self.embedded_twists:

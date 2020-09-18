@@ -27,7 +27,7 @@ class NumberTheoryDataTable():
     """
 
 
-    def __init__(self, pinned_rows=None, extra_html_classes=None):
+    def __init__(self, pinned_rows=None, extra_html_classes=None, style=None, title=None):
         self.column_headings = []
         self.column_alignments = []
         self.rows = []
@@ -36,6 +36,8 @@ class NumberTheoryDataTable():
         self.html_classes = ['ntdata']
         if extra_html_classes is not None:
             self.html_classes.extend(extra_html_classes)
+        self.style = style
+        self.title = title
 
 
     def add_column(self, knowl, title, alignment="left"):
@@ -62,9 +64,9 @@ class NumberTheoryDataTable():
     def to_html(self):
         """Return the HTML representation of this table.
         """
-        classes = ' '.join(self.html_classes)
-        lines = ['<table class="{classes}">'.format(classes=classes),
+        lines = [f'<table {self._class_attribute()}{self._style_attribute()}>',
                  '  <thead>',
+                 self._title_row(),
                  '    <tr>',
                  '      ' + self._format_headings(),
                  '    </tr>',
@@ -77,6 +79,24 @@ class NumberTheoryDataTable():
 
 
     # Implementation details
+
+
+    def _class_attribute(self):
+        return 'class="' + ' '.join(self.html_classes) + '"'
+
+
+    def _style_attribute(self):
+        if self.style is not None:
+            return f' style="{self.style}"'
+        else:
+            return ''
+
+
+    def _title_row(self):
+        if self.title is not None:
+            return f'<tr><th colspan={len(self.column_headings)} align="center">{self.title}</th></tr>'
+        else:
+            return ''
 
 
     def _format_headings(self):
